@@ -1,3 +1,21 @@
+[project]
+name = "styleai"
+version = "1.0.0"
+description = "AI-Powered Fashion Styling Advisor powered by Groq LLaMA 3.3 70B"
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+    "Flask>=3.0.0",
+    "Flask-CORS>=4.0.0",
+    "Pillow>=10.0.0",
+    "opencv-python-headless>=4.8.0",
+    "openai>=1.12.0",
+    "python-dotenv>=1.0.0",
+    "Werkzeug>=3.0.0",
+    "gunicorn>=21.2.0",
+    "numpy>=1.26.0"
+]
+
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 python_files = "test_*.py"
@@ -20,5 +38,3 @@ target-version = "py312"
 [tool.ruff.lint]
 select = ["E", "F", "W", "I"]
 ignore = ["E501"]
-
-
