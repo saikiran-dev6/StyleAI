@@ -21,14 +21,22 @@ class FaceNotFoundError(ImageAnalysisError):
 
 
 def get_haarcascade_path() -> str:
-    path = os.path.join(cv2.data.haarcascades, "haarcascade_frontalface_default.xml")
-    if os.path.exists(path):
-        return path
-    cv2_dir = os.path.dirname(cv2.__file__)
-    alt_path = os.path.join(cv2_dir, "data", "haarcascade_frontalface_default.xml")
-    if os.path.exists(alt_path):
-        return alt_path
+    try:
+        if hasattr(cv2, "data") and hasattr(cv2.data, "haarcascades"):
+            path = os.path.join(cv2.data.haarcascades, "haarcascade_frontalface_default.xml")
+            if os.path.exists(path):
+                return path
+    except Exception:
+        pass
+    try:
+        cv2_dir = os.path.dirname(cv2.__file__)
+        alt_path = os.path.join(cv2_dir, "data", "haarcascade_frontalface_default.xml")
+        if os.path.exists(alt_path):
+            return alt_path
+    except Exception:
+        pass
     return "haarcascade_frontalface_default.xml"
+
 
 
 class ImageAnalyzer:
