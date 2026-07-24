@@ -1,0 +1,172 @@
+<!-- Results Template Partial for JS Injection or Server Rendering -->
+<div class="results-wrapper">
+    <div class="results-header">
+        <span class="badge-success"><i class="fa-solid fa-circle-check"></i> Analysis Complete</span>
+        <h2 class="results-title">Personalized <span class="gradient-text">Style Profile</span></h2>
+        <p class="results-subtitle">Tailored for <strong>{{ gender }}</strong> complexion</p>
+    </div>
+
+    <!-- Analysis Overview Card -->
+    <div class="card skin-tone-card">
+        <div class="skin-tone-summary">
+            <div class="color-swatch-wrapper">
+                <div class="color-swatch" style="background-color: {{ analysis.hex_color }};"></div>
+                <span class="swatch-hex">{{ analysis.hex_color }}</span>
+            </div>
+            <div class="skin-tone-info">
+                <span class="meta-label">Detected Skin Tone Category</span>
+                <h3 class="skin-tone-name">{{ analysis.skin_tone }}</h3>
+                <p class="confidence-badge">
+                    <i class="fa-solid fa-shield-halved"></i> Confidence: {{ (analysis.confidence * 100)|int }}%
+                </p>
+                <div class="rgb-stats">
+                    <span class="rgb-pill">R: {{ analysis.median_rgb[0] }}</span>
+                    <span class="rgb-pill">G: {{ analysis.median_rgb[1] }}</span>
+                    <span class="rgb-pill">B: {{ analysis.median_rgb[2] }}</span>
+                    <span class="rgb-pill">Luma Y: {{ analysis.luminance }}</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Rationale & Advice Card -->
+    <div class="card rationale-card">
+        <h3><i class="fa-solid fa-lightbulb icon-accent"></i> Stylist Rationale</h3>
+        <p class="rationale-text">{{ recommendation.rationale }}</p>
+    </div>
+
+    <!-- Color Palette Section -->
+    <div class="card palette-card">
+        <h3><i class="fa-solid fa-swatchbook icon-accent"></i> Recommended Color Palette</h3>
+        <div class="palette-grid">
+            <div class="palette-group">
+                <span class="palette-title">Primary Colors</span>
+                <div class="chips-list">
+                    {% for color in recommendation.palette.primary %}
+                    <span class="chip chip-primary">{{ color }}</span>
+                    {% endfor %}
+                </div>
+            </div>
+            <div class="palette-group">
+                <span class="palette-title">Secondary Colors</span>
+                <div class="chips-list">
+                    {% for color in recommendation.palette.secondary %}
+                    <span class="chip chip-secondary">{{ color }}</span>
+                    {% endfor %}
+                </div>
+            </div>
+            <div class="palette-group">
+                <span class="palette-title">Accent Colors</span>
+                <div class="chips-list">
+                    {% for color in recommendation.palette.accent %}
+                    <span class="chip chip-accent">{{ color }}</span>
+                    {% endfor %}
+                </div>
+            </div>
+            <div class="palette-group">
+                <span class="palette-title">Colors to Avoid</span>
+                <div class="chips-list">
+                    {% for color in recommendation.palette.avoid %}
+                    <span class="chip chip-avoid">{{ color }}</span>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Outfit Recommendations Grid -->
+    <div class="outfits-section">
+        <h3 class="section-title"><i class="fa-solid fa-shirt icon-accent"></i> Outfit Combinations by Code</h3>
+        <div class="outfits-grid">
+            <div class="outfit-card">
+                <div class="outfit-icon"><i class="fa-solid fa-user-tie"></i></div>
+                <h4>Formal</h4>
+                <ul>
+                    {% for item in recommendation.outfits.formal %}
+                    <li><i class="fa-solid fa-angle-right"></i> {{ item }}</li>
+                    {% endfor %}
+                </ul>
+            </div>
+            <div class="outfit-card">
+                <div class="outfit-icon"><i class="fa-solid fa-briefcase"></i></div>
+                <h4>Business</h4>
+                <ul>
+                    {% for item in recommendation.outfits.business %}
+                    <li><i class="fa-solid fa-angle-right"></i> {{ item }}</li>
+                    {% endfor %}
+                </ul>
+            </div>
+            <div class="outfit-card">
+                <div class="outfit-icon"><i class="fa-solid fa-glasses"></i></div>
+                <h4>Casual</h4>
+                <ul>
+                    {% for item in recommendation.outfits.casual %}
+                    <li><i class="fa-solid fa-angle-right"></i> {{ item }}</li>
+                    {% endfor %}
+                </ul>
+            </div>
+            <div class="outfit-card">
+                <div class="outfit-icon"><i class="fa-solid fa-champagne-glasses"></i></div>
+                <h4>Party / Evening</h4>
+                <ul>
+                    {% for item in recommendation.outfits.party %}
+                    <li><i class="fa-solid fa-angle-right"></i> {{ item }}</li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- Hair & Accessories Grid -->
+    <div class="grid-2col">
+        <div class="card hair-card">
+            <h3><i class="fa-solid fa-scissors icon-accent"></i> Hairstyle & Maintenance</h3>
+            <h4>Recommendations</h4>
+            <div class="chips-list margin-bottom">
+                {% for style in recommendation.hairstyle.recommendations %}
+                <span class="chip chip-secondary">{{ style }}</span>
+                {% endfor %}
+            </div>
+            <h4>Maintenance Routine</h4>
+            <ul>
+                {% for tip in recommendation.hairstyle.maintenance %}
+                <li><i class="fa-solid fa-check icon-success"></i> {{ tip }}</li>
+                {% endfor %}
+            </ul>
+        </div>
+
+        <div class="card accessories-card">
+            <h3><i class="fa-solid fa-gem icon-accent"></i> Recommended Accessories</h3>
+            <div class="chips-list">
+                {% for item in recommendation.accessories %}
+                <span class="chip chip-accent">{{ item }}</span>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Shopping Links CTA Section -->
+    <div class="card shopping-card">
+        <h3><i class="fa-solid fa-cart-shopping icon-accent"></i> Curated Retailer Search Links</h3>
+        <p class="shopping-intro">Click any curated item query below to shop live matching products on verified platforms:</p>
+        <div class="shopping-grid">
+            {% for item in shopping_links %}
+            <div class="shopping-item-card">
+                <div class="shopping-item-header">
+                    <span class="retailer-badge badge-{{ item.retailer_key }}">{{ item.retailer }}</span>
+                </div>
+                <h4 class="shopping-item-title">{{ item.title }}</h4>
+                <a href="{{ item.url }}" target="_blank" rel="noopener noreferrer" class="btn btn-outline btn-sm">
+                    Shop on {{ item.retailer }} <i class="fa-solid fa-arrow-up-right-from-square"></i>
+                </a>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <div class="results-actions text-center">
+        <a href="#upload-section" class="btn btn-secondary btn-lg" onclick="resetForm()">
+            <i class="fa-solid fa-rotate-left"></i> Analyze Another Photo
+        </a>
+    </div>
+</div>
