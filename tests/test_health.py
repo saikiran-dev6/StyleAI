@@ -2,8 +2,16 @@ def test_healthz_endpoint(client):
     response = client.get("/healthz")
     assert response.status_code == 200
     data = response.get_json()
-    assert data["status"] == "healthy"
+    assert data["status"] == "running"
     assert data["service"] == "styleai-web"
+
+
+def test_health_endpoint(client):
+    response = client.get("/health")
+    assert response.status_code == 200
+    data = response.get_json()
+    assert data["status"] == "running"
+
 
 
 def test_readyz_endpoint(client):

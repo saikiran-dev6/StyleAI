@@ -82,9 +82,11 @@ def analyze():
             delete_temp_file(temp_path)
 
 
+@bp.route("/health", methods=["GET"])
 @bp.route("/healthz", methods=["GET"])
 def healthz():
-    return jsonify({"status": "healthy", "service": "styleai-web"}), 200
+    return jsonify({"status": "running", "service": "styleai-web"}), 200
+
 
 
 @bp.route("/readyz", methods=["GET"])
