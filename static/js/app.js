@@ -159,43 +159,54 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     function renderResults(data) {
-        const { gender, analysis, recommendation, shopping_links } = data;
+        try {
+            const gender = data.gender || "Female";
+            const analysis = data.analysis || {};
+            const recommendation = data.recommendation || {};
+            const shopping_links = data.shopping_links || [];
 
-        const palette = recommendation.palette || {};
-        const outfits = recommendation.outfits || {};
-        const hairstyle = recommendation.hairstyle || {};
-        const accessories = recommendation.accessories || [];
+            const median_rgb = analysis.median_rgb || [180, 140, 120];
+            const hex_color = analysis.hex_color || "#b48c78";
+            const skin_tone = analysis.skin_tone || "Medium";
+            const confidence = analysis.confidence !== undefined ? analysis.confidence : 0.85;
+            const luminance = analysis.luminance !== undefined ? analysis.luminance : 150.0;
 
-        const html = `
-            <div class="results-wrapper">
-                <div class="results-header">
-                    <span class="badge-success"><i class="fa-solid fa-circle-check"></i> Analysis Complete</span>
-                    <h2 class="results-title">Personalized <span class="gradient-text">Style Profile</span></h2>
-                    <p class="results-subtitle">Tailored for <strong>${gender}</strong> complexion</p>
-                </div>
+            const palette = recommendation.palette || {};
+            const outfits = recommendation.outfits || {};
+            const hairstyle = recommendation.hairstyle || {};
+            const accessories = recommendation.accessories || [];
 
-                <!-- Analysis Summary Card -->
-                <div class="card skin-tone-card">
-                    <div class="skin-tone-summary">
-                        <div class="color-swatch-wrapper">
-                            <div class="color-swatch" style="background-color: ${analysis.hex_color};"></div>
-                            <span class="swatch-hex">${analysis.hex_color}</span>
-                        </div>
-                        <div class="skin-tone-info">
-                            <span class="meta-label">Detected Skin Tone Category</span>
-                            <h3 class="skin-tone-name">${analysis.skin_tone}</h3>
-                            <p class="confidence-badge">
-                                <i class="fa-solid fa-shield-halved"></i> Confidence: ${Math.round(analysis.confidence * 100)}%
-                            </p>
-                            <div class="rgb-stats">
-                                <span class="rgb-pill">R: ${analysis.median_rgb[0]}</span>
-                                <span class="rgb-pill">G: ${analysis.median_rgb[1]}</span>
-                                <span class="rgb-pill">B: ${analysis.median_rgb[2]}</span>
-                                <span class="rgb-pill">Luma Y: ${analysis.luminance}</span>
+            const html = `
+                <div class="results-wrapper">
+                    <div class="results-header">
+                        <span class="badge-success"><i class="fa-solid fa-circle-check"></i> Analysis Complete</span>
+                        <h2 class="results-title">Personalized <span class="gradient-text">Style Profile</span></h2>
+                        <p class="results-subtitle">Tailored for <strong>${gender}</strong> complexion</p>
+                    </div>
+
+                    <!-- Analysis Summary Card -->
+                    <div class="card skin-tone-card">
+                        <div class="skin-tone-summary">
+                            <div class="color-swatch-wrapper">
+                                <div class="color-swatch" style="background-color: ${hex_color};"></div>
+                                <span class="swatch-hex">${hex_color}</span>
+                            </div>
+                            <div class="skin-tone-info">
+                                <span class="meta-label">Detected Skin Tone Category</span>
+                                <h3 class="skin-tone-name">${skin_tone}</h3>
+                                <p class="confidence-badge">
+                                    <i class="fa-solid fa-shield-halved"></i> Confidence: ${Math.round(confidence * 100)}%
+                                </p>
+                                <div class="rgb-stats">
+                                    <span class="rgb-pill">R: ${median_rgb[0]}</span>
+                                    <span class="rgb-pill">G: ${median_rgb[1]}</span>
+                                    <span class="rgb-pill">B: ${median_rgb[2]}</span>
+                                    <span class="rgb-pill">Luma Y: ${luminance}</span>
+                                </div>
                             </div>
                         </div>
                     </div>
-                </div>
+
 
                 <!-- Stylist Rationale Card -->
                 <div class="card rationale-card">
@@ -318,11 +329,19 @@ document.addEventListener("DOMContentLoaded", () => {
             </div>
         `;
 
-        resultsContainer.innerHTML = html;
-        resultsSection.classList.remove("hidden");
+            resultsContainer.innerHTML = html;
+            resultsSection.classList.remove("hidden");
 
-        resultsSection.scrollIntoView({ behavior: "smooth" });
+            window.scrollTo({
+                top: resultsSection.offsetTop - 30,
+                behavior: "smooth"
+            });
+        } catch (err) {
+            console.error("Rendering error:", err);
+            showToast("An error occurred while displaying results. Please refresh.", "error");
+        }
     }
+
 
     function showToast(message, type = "info") {
         const toastContainer = document.getElementById("toast-container");
