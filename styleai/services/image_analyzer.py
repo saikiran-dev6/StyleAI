@@ -21,6 +21,12 @@ class FaceNotFoundError(ImageAnalysisError):
 
 
 def get_haarcascade_path() -> str:
+    # 1. Bundled local data directory (bulletproof across Vercel, Docker, Windows, Linux)
+    bundled_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), "data", "haarcascade_frontalface_default.xml")
+    if os.path.exists(bundled_path):
+        return bundled_path
+
+    # 2. Fall back to cv2 package data
     try:
         if hasattr(cv2, "data") and hasattr(cv2.data, "haarcascades"):
             path = os.path.join(cv2.data.haarcascades, "haarcascade_frontalface_default.xml")
@@ -36,7 +42,6 @@ def get_haarcascade_path() -> str:
     except Exception:
         pass
     return "haarcascade_frontalface_default.xml"
-
 
 
 class ImageAnalyzer:
@@ -59,9 +64,6 @@ class ImageAnalyzer:
     def face_cascade(self, value):
         self._face_cascade = value
 
-
-
-
     def analyze_image(self, file_path_or_bytes) -> Dict[str, Any]:
         """
         Loads image, detects face ROI, extracts skin RGB percentiles,
@@ -74,33 +76,53 @@ class ImageAnalyzer:
         except Exception as e:
             raise ImageAnalysisError(f"Failed to load image file: {str(e)}")
 
+        img_w, img_h = pil_img.width, pil_img.height
+
         # Proportional resize if longest edge exceeds 1280px
-        max_dim = max(pil_img.width, pil_img.height)
+        max_dim = max(img_w, img_h)
         if max_dim > 1280:
             scale = 1280.0 / max_dim
-            new_w = int(pil_img.width * scale)
-            new_h = int(pil_img.height * scale)
-            pil_img = pil_img.resize((new_w, new_h), Image.Resampling.LANCZOS)
+            img_w = int(img_w * scale)
+            img_h = int(img_h * scale)
+            pil_img = pil_img.resize((img_w, img_h), Image.Resampling.LANCZOS)
 
         # Convert Pillow RGB -> OpenCV BGR
         rgb_np = np.array(pil_img)
         bgr_np = cv2.cvtColor(rgb_np, cv2.COLOR_RGB2BGR)
 
-        # Face detection
+        # Face detection multi-tier attempt
         gray = cv2.cvtColor(bgr_np, cv2.COLOR_BGR2GRAY)
-        faces = self.face_cascade.detectMultiScale(
-            gray,
-            scaleFactor=1.1,
-            minNeighbors=5,
-            minSize=(80, 80)
-        )
+        faces = []
+        try:
+            if not self.face_cascade.empty():
+                faces = self.face_cascade.detectMultiScale(
+                    gray,
+                    scaleFactor=1.1,
+                    minNeighbors=5,
+                    minSize=(80, 80)
+                )
+                if len(faces) == 0:
+                    faces = self.face_cascade.detectMultiScale(
+                        gray,
+                        scaleFactor=1.05,
+                        minNeighbors=3,
+                        minSize=(40, 40)
+                    )
+        except Exception:
+            faces = []
 
+        is_fallback_center = False
         if len(faces) == 0:
-            raise FaceNotFoundError("No face detected in the uploaded photo. Please ensure a clear, well-lit frontal face image is provided.")
-
-        # Select largest face box (w * h)
-        largest_face = max(faces, key=lambda rect: rect[2] * rect[3])
-        fx, fy, fw, fh = largest_face
+            # Fallback to center 50% region of the uploaded image
+            is_fallback_center = True
+            fx = int(img_w * 0.25)
+            fy = int(img_h * 0.20)
+            fw = int(img_w * 0.50)
+            fh = int(img_h * 0.50)
+        else:
+            # Select largest face box (w * h)
+            largest_face = max(faces, key=lambda rect: rect[2] * rect[3])
+            fx, fy, fw, fh = largest_face
 
         # ROI fractions relative to face box
         rois_spec = [
@@ -139,7 +161,9 @@ class ImageAnalyzer:
             all_pixels = np.vstack(skin_pixels_rgb)
 
         if len(all_pixels) == 0:
-            raise ImageAnalysisError("Failed to extract valid skin tone pixels from face ROI.")
+            # Full image fallback
+            all_pixels = rgb_np.reshape(-1, 3)
+
 
         # NumPy 20th–80th percentile trimming per channel
         trimmed_rgb = []

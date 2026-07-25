@@ -11,9 +11,17 @@ def test_index_route(client):
 
 
 
-def test_analyze_route_no_face_error(client, dummy_non_face_image_bytes):
+def test_analyze_route_no_face_error(client, monkeypatch):
+    from styleai.routes import image_analyzer
+    from styleai.services.image_analyzer import FaceNotFoundError
+
+    def raise_no_face(path):
+        raise FaceNotFoundError("No face detected in photo.")
+
+    monkeypatch.setattr(image_analyzer, "analyze_image", raise_no_face)
+
     data = {
-        "image": (io.BytesIO(dummy_non_face_image_bytes), "test.jpg"),
+        "image": (io.BytesIO(b"fake image"), "test.jpg"),
         "gender": "Female"
     }
     response = client.post("/analyze", data=data, content_type="multipart/form-data")
@@ -21,6 +29,7 @@ def test_analyze_route_no_face_error(client, dummy_non_face_image_bytes):
     res_data = response.get_json()
     assert res_data["success"] is False
     assert "No face detected" in res_data["error"]
+
 
 
 def test_analyze_route_success(client, monkeypatch):

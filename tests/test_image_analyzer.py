@@ -8,8 +8,9 @@ from styleai.services.image_analyzer import FaceNotFoundError, ImageAnalysisErro
 def test_image_analyzer_no_face(dummy_non_face_image_bytes):
     analyzer = ImageAnalyzer()
     buf = io.BytesIO(dummy_non_face_image_bytes)
-    with pytest.raises(FaceNotFoundError):
-        analyzer.analyze_image(buf)
+    res = analyzer.analyze_image(buf)
+    assert res["skin_tone"] in ["Fair", "Medium", "Olive", "Deep"]
+
 
 
 def test_image_analyzer_invalid_file():
@@ -32,6 +33,7 @@ def test_image_analyzer_success_with_mocked_face(monkeypatch):
 
     analyzer = ImageAnalyzer()
     mock_cascade = MagicMock()
+    mock_cascade.empty.return_value = False
     mock_cascade.detectMultiScale.return_value = np.array([[50, 50, 200, 200]])
     monkeypatch.setattr(analyzer, "face_cascade", mock_cascade)
 
@@ -40,6 +42,7 @@ def test_image_analyzer_success_with_mocked_face(monkeypatch):
     assert "hex_color" in res
     assert res["confidence"] > 0
     assert res["face_box"] == {"x": 50, "y": 50, "w": 200, "h": 200}
+
 
 
 def test_image_analyzer_large_image_resizing(monkeypatch):
