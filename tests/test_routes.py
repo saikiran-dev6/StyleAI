@@ -122,3 +122,5 @@ def test_analyze_route_unexpected_exception(client, monkeypatch):
     assert "Failed to analyze image" in res["error"]
 
 
+
+

@@ -16,6 +16,7 @@ groq_client = GroqClient()
 shopping_service = ShoppingLinkService()
 
 
+
 @bp.route("/", methods=["GET"])
 def index():
     return render_template("index.html")
@@ -56,6 +57,8 @@ def analyze():
         shopping_links = shopping_service.build_retailer_links(
             recommendation.get("shopping_queries", {})
         )
+
+
 
         return jsonify({
             "success": True,

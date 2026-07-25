@@ -41,11 +41,25 @@ def get_haarcascade_path() -> str:
 
 class ImageAnalyzer:
     def __init__(self):
-        cascade_path = get_haarcascade_path()
-        self.face_cascade = cv2.CascadeClassifier(cascade_path)
-        if self.face_cascade.empty():
-            # In case XML load failed, attempt default name
-            self.face_cascade = cv2.CascadeClassifier("haarcascade_frontalface_default.xml")
+        self._face_cascade = None
+
+    @property
+    def face_cascade(self):
+        if self._face_cascade is None:
+            try:
+                cascade_path = get_haarcascade_path()
+                self._face_cascade = cv2.CascadeClassifier(cascade_path)
+                if self._face_cascade.empty():
+                    self._face_cascade = cv2.CascadeClassifier("haarcascade_frontalface_default.xml")
+            except Exception:
+                self._face_cascade = cv2.CascadeClassifier()
+        return self._face_cascade
+
+    @face_cascade.setter
+    def face_cascade(self, value):
+        self._face_cascade = value
+
+
 
 
     def analyze_image(self, file_path_or_bytes) -> Dict[str, Any]:
