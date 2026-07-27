@@ -2,6 +2,8 @@ import os
 
 from dotenv import load_dotenv
 
+import tempfile
+
 load_dotenv()
 
 
@@ -10,14 +12,14 @@ class Config:
     SECRET_KEY = os.getenv("SECRET_KEY", "styleai-secret-key-default-change-me")
     MAX_CONTENT_LENGTH_MB = int(os.getenv("MAX_CONTENT_LENGTH_MB", "10"))
     MAX_CONTENT_LENGTH = MAX_CONTENT_LENGTH_MB * 1024 * 1024
-    UPLOAD_TMP_DIR = os.getenv("UPLOAD_TMP_DIR", "/tmp/styleai")
+    UPLOAD_TMP_DIR = os.getenv("UPLOAD_TMP_DIR") or os.path.join(tempfile.gettempdir(), "styleai")
 
     # Groq configuration
     GROQ_API_KEY = os.getenv("GROQ_API_KEY") or os.getenv("PI_KEY", "")
     GROQ_BASE_URL = os.getenv("GROQ_BASE_URL", "https://api.groq.com/openai/v1")
 
     GROQ_MODEL = os.getenv("GROQ_MODEL", "llama-3.3-70b-versatile")
-    GROQ_TIMEOUT_SECONDS = int(os.getenv("GROQ_TIMEOUT_SECONDS", "90"))
+    GROQ_TIMEOUT_SECONDS = int(os.getenv("GROQ_TIMEOUT_SECONDS", "8"))
     GROQ_MAX_OUTPUT_TOKENS = int(os.getenv("GROQ_MAX_OUTPUT_TOKENS", "1200"))
     GROQ_TEMPERATURE = float(os.getenv("GROQ_TEMPERATURE", "0.7"))
 

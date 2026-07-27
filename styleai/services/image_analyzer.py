@@ -70,6 +70,11 @@ class ImageAnalyzer:
         computes luminance, and classifies skin tone into Fair, Medium, Olive, or Deep.
         """
         try:
+            if hasattr(file_path_or_bytes, "stream"):
+                file_path_or_bytes = file_path_or_bytes.stream
+            elif isinstance(file_path_or_bytes, (bytes, bytearray)):
+                import io
+                file_path_or_bytes = io.BytesIO(file_path_or_bytes)
             pil_img = Image.open(file_path_or_bytes)
             pil_img = ImageOps.exif_transpose(pil_img)
             pil_img = pil_img.convert("RGB")

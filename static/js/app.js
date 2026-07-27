@@ -122,7 +122,21 @@ document.addEventListener("DOMContentLoaded", () => {
 
             updateLoadingStep("Consulting Groq LLaMA 3.3 70B AI styling model...", 75);
 
-            const data = await response.json();
+            let data;
+            try {
+                const text = await response.text();
+                data = JSON.parse(text);
+            } catch (jsonErr) {
+                hideLoadingState();
+                if (response.status === 413) {
+                    showToast("Uploaded image is too large for the server limit. Please choose a photo under 4.5MB.", "error");
+                } else if (response.status === 504) {
+                    showToast("Analysis timed out. Please try again with a clearer photo.", "error");
+                } else {
+                    showToast(`Server returned error status (${response.status}). Please try another photo.`, "error");
+                }
+                return;
+            }
 
             if (!response.ok || !data.success) {
                 hideLoadingState();
@@ -139,7 +153,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
         } catch (err) {
             hideLoadingState();
-            showToast("Network error. Please check your connection and try again.", "error");
+            showToast("Network error or connection lost. Please try again.", "error");
         }
     });
 
