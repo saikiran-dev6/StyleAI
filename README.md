@@ -197,6 +197,39 @@ bash scripts/smoke_test.sh http://localhost:8080
 
 ---
 
+## 🧪 Testing, Configuration & Potential Enhancements
+
+### ⚙️ System Configuration Parameters
+
+| Parameter | Configured Value | Purpose |
+|---|---|---|
+| `MAX_FILE_SIZE` | `10MB` | Maximum allowed upload photo cap |
+| `ALLOWED_EXTENSIONS` | `png, jpg, jpeg, gif, webp` | Supported image format whitelist |
+| `GROQ_MODEL` | `llama-3.3-70b-versatile` | LLaMA 3.3 70B AI inference model |
+| `MAX_TOKENS` | `1200` | Token limit for structured styling JSON |
+| `TIMEOUT` | `90 seconds` | Maximum backend timeout threshold |
+| `TEMPERATURE` | `0.7` | AI creative style generation temperature |
+
+### 🔬 Automated Test Cases
+
+- **Test Case 1: Image Upload Validation** ([`tests/test_upload_validation.py`](file:///c:/Users/SUSHMA%20SHYAMALA/OneDrive/Desktop/agentic%20ai/tests/test_upload_validation.py))
+  - Validates filename sanitization, MIME extension whitelisting, missing file errors, and disallowed extensions.
+- **Test Case 2: Skin Tone Detection** ([`tests/test_image_analyzer.py`](file:///c:/Users/SUSHMA%20SHYAMALA/OneDrive/Desktop/agentic%20ai/tests/test_image_analyzer.py) & [`tests/test_skin_tone_classifier.py`](file:///c:/Users/SUSHMA%20SHYAMALA/OneDrive/Desktop/agentic%20ai/tests/test_skin_tone_classifier.py))
+  - Validates facial ROI detection from frontal photos, NumPy 20th–80th percentile RGB extraction, Luma calculation, and classification into **Fair, Medium, Olive, or Deep**.
+
+### 💡 Potential Enhancements
+
+- **Continuous Color Mapping**: Expand skin tone categories beyond 4 into continuous HSV/RGB spectrums.
+- **Inclusive Gender Options**: Add non-binary and custom gender preference options.
+- **Database Integration**: Dynamic product catalog and real-time inventory matching.
+- **User Accounts & History**: User authentication and styling history saved to user profiles.
+- **Multi-Photo Consistency**: Upload multiple photos for lighting-averaged color profiling.
+- **Virtual Try-On**: Augmented reality overlay for recommended outfits.
+- **Seasonal Trends**: Real-time fashion trend integration powered by live web search.
+- **Personalized Preference Learning**: AI feedback loop adapting to user favorite brands and styles.
+
+---
+
 ## ☁️ Deployment & CI/CD Pipeline
 
 The GitHub Actions workflows (`.github/workflows/ci.yml` and `cd.yml`) perform:
