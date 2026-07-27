@@ -52,6 +52,25 @@ class RecommendationParser:
                     queries[ret] = [f"{gender} formal shirt", f"{gender} casual jacket"]
             data["shopping_queries"] = queries
 
+            hairstyle = data.get("hairstyle", {})
+            if not isinstance(hairstyle, dict):
+                hairstyle = {}
+            for sub_key in ["recommendations", "maintenance"]:
+                if sub_key not in hairstyle or not isinstance(hairstyle[sub_key], list):
+                    hairstyle[sub_key] = ["Textured style", "Hydrating hair serum"] if sub_key == "recommendations" else ["Regular 4-6 week trim"]
+            data["hairstyle"] = hairstyle
+
+            accessories = data.get("accessories", [])
+            if not isinstance(accessories, list):
+                if isinstance(accessories, str) and accessories.strip():
+                    accessories = [a.strip() for a in accessories.split(",") if a.strip()]
+                else:
+                    accessories = ["Classic watch", "Leather belt"]
+            data["accessories"] = accessories
+
+            if not isinstance(data.get("rationale"), str) or not data["rationale"].strip():
+                data["rationale"] = f"Harmonious styling recommendations formulated for {gender} {default_skin_tone} skin tone."
+
             return data
 
         except Exception:

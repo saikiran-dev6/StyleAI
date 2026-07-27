@@ -172,23 +172,32 @@ document.addEventListener("DOMContentLoaded", () => {
         loadingOverlay.classList.add("hidden");
     }
 
+    function ensureArray(val) {
+        if (Array.isArray(val)) return val;
+        if (typeof val === "string" && val.trim()) {
+            return val.split(",").map(s => s.trim()).filter(Boolean);
+        }
+        return [];
+    }
+
     function renderResults(data) {
         try {
             const gender = data.gender || "Female";
             const analysis = data.analysis || {};
             const recommendation = data.recommendation || {};
-            const shopping_links = data.shopping_links || [];
+            const shopping_links = ensureArray(data.shopping_links);
 
-            const median_rgb = analysis.median_rgb || [180, 140, 120];
+            const median_rgb = ensureArray(analysis.median_rgb);
+            if (median_rgb.length < 3) median_rgb.push(...[180, 140, 120].slice(median_rgb.length));
             const hex_color = analysis.hex_color || "#b48c78";
             const skin_tone = analysis.skin_tone || "Medium";
-            const confidence = analysis.confidence !== undefined ? analysis.confidence : 0.85;
-            const luminance = analysis.luminance !== undefined ? analysis.luminance : 150.0;
+            const confidence = (analysis.confidence !== undefined && analysis.confidence !== null) ? analysis.confidence : 0.85;
+            const luminance = (analysis.luminance !== undefined && analysis.luminance !== null) ? analysis.luminance : 150.0;
 
-            const palette = recommendation.palette || {};
-            const outfits = recommendation.outfits || {};
-            const hairstyle = recommendation.hairstyle || {};
-            const accessories = recommendation.accessories || [];
+            const palette = (recommendation && typeof recommendation.palette === 'object' && recommendation.palette !== null) ? recommendation.palette : {};
+            const outfits = (recommendation && typeof recommendation.outfits === 'object' && recommendation.outfits !== null) ? recommendation.outfits : {};
+            const hairstyle = (recommendation && typeof recommendation.hairstyle === 'object' && recommendation.hairstyle !== null) ? recommendation.hairstyle : {};
+            const accessories = ensureArray(recommendation.accessories);
 
             const html = `
                 <div class="results-wrapper">
@@ -235,25 +244,25 @@ document.addEventListener("DOMContentLoaded", () => {
                         <div class="palette-group">
                             <span class="palette-title">Primary Colors</span>
                             <div class="chips-list">
-                                ${(palette.primary || []).map(c => `<span class="chip chip-primary">${c}</span>`).join("")}
+                                ${ensureArray(palette.primary).map(c => `<span class="chip chip-primary">${c}</span>`).join("")}
                             </div>
                         </div>
                         <div class="palette-group">
                             <span class="palette-title">Secondary Colors</span>
                             <div class="chips-list">
-                                ${(palette.secondary || []).map(c => `<span class="chip chip-secondary">${c}</span>`).join("")}
+                                ${ensureArray(palette.secondary).map(c => `<span class="chip chip-secondary">${c}</span>`).join("")}
                             </div>
                         </div>
                         <div class="palette-group">
                             <span class="palette-title">Accent Colors</span>
                             <div class="chips-list">
-                                ${(palette.accent || []).map(c => `<span class="chip chip-accent">${c}</span>`).join("")}
+                                ${ensureArray(palette.accent).map(c => `<span class="chip chip-accent">${c}</span>`).join("")}
                             </div>
                         </div>
                         <div class="palette-group">
                             <span class="palette-title">Colors to Avoid</span>
                             <div class="chips-list">
-                                ${(palette.avoid || []).map(c => `<span class="chip chip-avoid">${c}</span>`).join("")}
+                                ${ensureArray(palette.avoid).map(c => `<span class="chip chip-avoid">${c}</span>`).join("")}
                             </div>
                         </div>
                     </div>
@@ -267,28 +276,28 @@ document.addEventListener("DOMContentLoaded", () => {
                             <div class="outfit-icon"><i class="fa-solid fa-user-tie"></i></div>
                             <h4>Formal</h4>
                             <ul>
-                                ${(outfits.formal || []).map(item => `<li><i class="fa-solid fa-angle-right"></i> ${item}</li>`).join("")}
+                                ${ensureArray(outfits.formal).map(item => `<li><i class="fa-solid fa-angle-right"></i> ${item}</li>`).join("")}
                             </ul>
                         </div>
                         <div class="outfit-card">
                             <div class="outfit-icon"><i class="fa-solid fa-briefcase"></i></div>
                             <h4>Business</h4>
                             <ul>
-                                ${(outfits.business || []).map(item => `<li><i class="fa-solid fa-angle-right"></i> ${item}</li>`).join("")}
+                                ${ensureArray(outfits.business).map(item => `<li><i class="fa-solid fa-angle-right"></i> ${item}</li>`).join("")}
                             </ul>
                         </div>
                         <div class="outfit-card">
                             <div class="outfit-icon"><i class="fa-solid fa-glasses"></i></div>
                             <h4>Casual</h4>
                             <ul>
-                                ${(outfits.casual || []).map(item => `<li><i class="fa-solid fa-angle-right"></i> ${item}</li>`).join("")}
+                                ${ensureArray(outfits.casual).map(item => `<li><i class="fa-solid fa-angle-right"></i> ${item}</li>`).join("")}
                             </ul>
                         </div>
                         <div class="outfit-card">
                             <div class="outfit-icon"><i class="fa-solid fa-champagne-glasses"></i></div>
                             <h4>Party / Evening</h4>
                             <ul>
-                                ${(outfits.party || []).map(item => `<li><i class="fa-solid fa-angle-right"></i> ${item}</li>`).join("")}
+                                ${ensureArray(outfits.party).map(item => `<li><i class="fa-solid fa-angle-right"></i> ${item}</li>`).join("")}
                             </ul>
                         </div>
                     </div>
@@ -300,18 +309,18 @@ document.addEventListener("DOMContentLoaded", () => {
                         <h3><i class="fa-solid fa-scissors icon-accent"></i> Hairstyle & Maintenance</h3>
                         <h4>Recommendations</h4>
                         <div class="chips-list margin-bottom">
-                            ${(hairstyle.recommendations || []).map(s => `<span class="chip chip-secondary">${s}</span>`).join("")}
+                            ${ensureArray(hairstyle.recommendations).map(s => `<span class="chip chip-secondary">${s}</span>`).join("")}
                         </div>
                         <h4>Maintenance Routine</h4>
                         <ul>
-                            ${(hairstyle.maintenance || []).map(tip => `<li><i class="fa-solid fa-check icon-success"></i> ${tip}</li>`).join("")}
+                            ${ensureArray(hairstyle.maintenance).map(tip => `<li><i class="fa-solid fa-check icon-success"></i> ${tip}</li>`).join("")}
                         </ul>
                     </div>
 
                     <div class="card accessories-card">
                         <h3><i class="fa-solid fa-gem icon-accent"></i> Recommended Accessories</h3>
                         <div class="chips-list">
-                            ${(accessories || []).map(a => `<span class="chip chip-accent">${a}</span>`).join("")}
+                            ${ensureArray(accessories).map(a => `<span class="chip chip-accent">${a}</span>`).join("")}
                         </div>
                     </div>
                 </div>
@@ -321,7 +330,7 @@ document.addEventListener("DOMContentLoaded", () => {
                     <h3><i class="fa-solid fa-cart-shopping icon-accent"></i> Curated Retailer Search Links</h3>
                     <p class="shopping-intro">Click any item query below to shop live matching products on verified platforms:</p>
                     <div class="shopping-grid">
-                        ${(shopping_links || []).map(link => `
+                        ${ensureArray(shopping_links).map(link => `
                             <div class="shopping-item-card">
                                 <div class="shopping-item-header">
                                     <span class="retailer-badge badge-${link.retailer_key}">${link.retailer}</span>
@@ -331,7 +340,7 @@ document.addEventListener("DOMContentLoaded", () => {
                                     Shop on ${link.retailer} <i class="fa-solid fa-arrow-up-right-from-square"></i>
                                 </a>
                             </div>
-                        `).join("")}
+                        `).map(item => item || "").join("")}
                     </div>
                 </div>
 
