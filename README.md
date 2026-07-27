@@ -16,6 +16,83 @@ StyleAI is an intelligent, privacy-first personal fashion styling platform power
 
 ---
 
+## 📋 Pre-requisites
+
+Essential tools, software, and packages required before running or deploying the project:
+
+- **Python 3.8+** – [https://www.python.org/downloads/](https://www.python.org/downloads/)
+- **Flask** – [https://flask.palletsprojects.com/](https://flask.palletsprojects.com/)
+- **OpenCV** – [https://docs.opencv.org/](https://docs.opencv.org/)
+- **Groq API Console (API Key)** – [https://console.groq.com/](https://console.groq.com/)
+- **Git** – [https://git-scm.com/downloads](https://git-scm.com/downloads)
+- **Visual Studio Code** – [https://code.visualstudio.com/](https://code.visualstudio.com/)
+- **PyCharm** – [https://www.jetbrains.com/pycharm/download/](https://www.jetbrains.com/pycharm/download/)
+- **NumPy** – [https://numpy.org/doc/](https://numpy.org/doc/)
+- **python-dotenv** – [https://pypi.org/project/python-dotenv/](https://pypi.org/project/python-dotenv/)
+- **pip (Python Package Installer)** – [https://pip.pypa.io/](https://pip.pypa.io/)
+
+---
+
+## 📁 Project Structure
+
+```text
+agentic ai/
+├── api/
+│   └── index.py                # Vercel Serverless Function Handler
+├── styleai/
+│   ├── data/
+│   │   └── haarcascade_frontalface_default.xml # Bundled OpenCV Face Classifier
+│   ├── services/
+│   │   ├── groq_client.py       # Groq LLaMA 3.3 70B AI Integration
+│   │   ├── image_analyzer.py    # OpenCV Face ROI & NumPy RGB Skin Analysis
+│   │   ├── prompt_builder.py    # Structured Prompt Construction & Fallbacks
+│   │   ├── recommendation_parser.py # JSON Parser & Type Normalizer
+│   │   └── shopping_links.py    # Amazon, Myntra & Zara Search Link Generator
+│   ├── utils/
+│   │   ├── color_utils.py       # Luminance & Luma Skin Classification
+│   │   ├── file_utils.py        # Ephemeral File Handling
+│   │   └── security.py          # Upload Validation & Sanitization
+│   ├── config.py                # App & Environment Configuration
+│   ├── logging_config.py        # Structured Log Formatters
+│   └── routes.py                # Flask Web Routes & API Handlers
+├── static/
+│   ├── css/styles.css           # Modern Dark Luxury UI Stylesheet
+│   └── js/app.js                # Frontend Async Processing & Dynamic DOM
+├── templates/
+│   ├── base.html                # Shared Master Layout
+│   └── index.html               # Main Styling Advisor Dashboard
+├── tests/                       # Automated Pytest Integration & Unit Suite
+├── vercel.json                  # Vercel Serverless Rewrite Config
+├── requirements.txt             # Production Dependencies
+├── app.py                       # Local Flask Entrypoint
+└── wsgi.py                      # Production WSGI Gunicorn Launcher
+```
+
+---
+
+## 🔌 API Endpoints
+
+| Endpoint | Method | Input / Content-Type | Description | Response Format |
+|---|---|---|---|---|
+| `/` | `GET` | None | Serves main Web UI dashboard | HTML |
+| `/analyze` | `POST` | `multipart/form-data` (`image`, `gender`) | Upload photo for skin tone & AI recommendations | JSON |
+| `/healthz` | `GET` | None | Health check endpoint | JSON (`status: running`) |
+| `/readyz` | `GET` | None | Readiness probe | JSON (`status: ready`) |
+| `/version` | `GET` | None | Service version metadata | JSON |
+
+---
+
+## ⚡ Vercel Serverless Deployment
+
+1. Connect your GitHub repository (`saikiran-dev6/StyleAI`) to Vercel.
+2. Ensure [`vercel.json`](file:///c:/Users/SUSHMA%20SHYAMALA/OneDrive/Desktop/agentic%20ai/vercel.json) rewrites `/(.*)` to `/api/index.py`.
+3. Set environment variables in Vercel Project Settings:
+   - `GROQ_API_KEY`: *(Your Groq API key)*
+   - `FLASK_ENV`: `production`
+4. Deploy — Vercel automatically builds using `requirements.txt` and serves the app on your domain.
+
+---
+
 ## 🏗️ Technical Architecture
 
 ```mermaid
