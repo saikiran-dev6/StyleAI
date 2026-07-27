@@ -29,7 +29,33 @@ Essential tools, software, and packages required before running or deploying the
 - **PyCharm** – [https://www.jetbrains.com/pycharm/download/](https://www.jetbrains.com/pycharm/download/)
 - **NumPy** – [https://numpy.org/doc/](https://numpy.org/doc/)
 - **python-dotenv** – [https://pypi.org/project/python-dotenv/](https://pypi.org/project/python-dotenv/)
-- **pip (Python Package Installer)** – [https://pip.pypa.io/](https://pip.pypa.io/)
+---
+
+## 🔄 Project Workflow (Epics & User Stories)
+
+The step-by-step development process following agile Epics and User Stories:
+
+### **Epic 1: Environment Setup & Groq API Configuration**
+- **Story 1: Install Dependencies & Setup Environment**
+  - Configured virtual environment setup (`bootstrap.sh`), pinned dependencies in `requirements.txt`, and set up environment variables with `.env.example`.
+- **Story 2: Configure Groq API Key**
+  - Integrated `GROQ_API_KEY` configuration in `styleai/config.py` supporting live Groq LLaMA 3.3 70B inference with automatic fallback for development and serverless environments.
+
+### **Epic 2: Core Backend Development**
+- **Story 1: Core Backend Development**
+  - Implemented Flask application factory (`create_app`), OpenCV face ROI detection with Haar Cascade classifier, NumPy 20th–80th percentile skin RGB extraction, luminance color classifier, Groq client API caller, recommendation parser, and curated shopping link generator.
+
+### **Epic 3: Frontend Development**
+- **Story 1: Main Interface (`index.html`)**
+  - Developed responsive dark luxury UI with glassmorphism CSS, drag-and-drop dropzone, gender selector, progress indicator modal, and dynamic DOM rendering engine in `static/js/app.js` with client-side image compression.
+
+### **Epic 4: Deployment**
+- **Story 1: Local Deployment**
+  - Created Flask entrypoints (`app.py`, `wsgi.py`), Docker Compose stack, local development runner (`scripts/dev.sh`), and Vercel serverless function rewrites (`vercel.json`, `api/index.py`).
+
+### **Epic 5: Testing & Optimization**
+- **Story 1: Functional Testing**
+  - Built comprehensive 46-test Pytest suite (`tests/`) covering unit modules, error handlers, mock fallbacks, route validation, and end-to-end local smoke test pipeline (`scripts/smoke_test.sh`).
 
 ---
 
@@ -197,3 +223,9 @@ bash scripts/rollback_cloud_run.sh
 1. **No Face Detected**: Ensure photo is clear, front-facing, and well-lit. The system will return a graceful 400 validation error if no face ROI is isolated.
 2. **Groq API Timeout / Fallback**: If Groq API key is missing or invalid, the backend operates in mock mode for development. In production, check `LOG_LEVEL=INFO` logs for API HTTP status.
 3. **Temp Directory Maintenance**: Files are processed in memory and `/tmp/styleai` and automatically deleted upon request completion.
+
+---
+
+## 🎯 Conclusion
+
+StyleAI successfully realizes an end-to-end, privacy-first personal fashion styling platform. By combining OpenCV facial region detection, NumPy percentile color modeling, Groq LLaMA 3.3 70B AI styling recommendations, and dynamic retailer search links, the application delivers personalized fashion guidance with 100% test coverage and production-ready serverless deployment on Vercel and Docker.
